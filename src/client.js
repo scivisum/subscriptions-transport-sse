@@ -4,6 +4,8 @@ import {print} from 'graphql/language/printer';
 import isString from 'lodash.isstring';
 import isObject from 'lodash.isobject';
 
+let numSubs = 0;
+
 export class SubscriptionClient {
   constructor(url, httpOptions) {
     this.httpOptions = httpOptions;
@@ -28,92 +30,46 @@ export class SubscriptionClient {
         'Incorrect option types to subscribe. `operationName` must be a string, and `variables` must be an object.'
       );
 
-    return fetch(this.url, {
-      method: 'POST',
-      headers: Object.assign({}, headers, {
-        'Content-Type': 'application/json'
-      }),
-      body: JSON.stringify(options),
-      timeout: timeout || 1000
-    })
-      .then(res => res.json())
-      .then(data => {
-        const subId = data.subId;
+    let subId = numSubs;
+    numSubs++;
 
-        const evtSource = new EventSource(`${this.url}/${subId}`, {
-          headers
-        });
-        this.subscriptions[subId] = {options, handler, evtSource};
+    let queryString = Object.keys(options)
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(options[key])}`)
+    .join('&');
+    const evtSource = new EventSource(`${this.url}?${queryString}`, {
+      headers
+    });
+    this.subscriptions[subId] = {options, handler, evtSource};
 
-        evtSource.onmessage = e => {
-          const message = JSON.parse(e.data);
-          switch (message.type) {
-            case 'SUBSCRIPTION_DATA':
-              this.subscriptions[subId].handler(message.data);
-              break;
-            case 'KEEPALIVE':
-              break;
-          }
-
-          evtSource.onerror = e => {
-            console.error(
-              `EventSource connection failed for subscription ID: ${subId}. Retry.`
-            );
-            if (
-              this.subscriptions[subId] &&
-              this.subscriptions[subId].evtSource
-            ) {
-              this.subscriptions[subId].evtSource.close();
-            }
-            delete this.subscriptions[subId];
-            const retryTimeout = setTimeout(() => {
-              this.subscribe(options, handler);
-              clearTimeout(retryTimeout);
-            }, 1000);
-          };
-        };
-        return subId;
-      })
-      .catch(error => {
-        console.error(`${error.message}. Subscription failed. Retry.`);
-        const retryTimeout = setTimeout(() => {
-          this.subscribe(options, handler);
-          clearTimeout(retryTimeout);
-        }, 1000);
-      });
+    evtSource.onmessage = e => {
+      const message = JSON.parse(e.data);
+      switch (message.type) {
+        case 'SUBSCRIPTION_DATA':
+          this.subscriptions[subId].handler(message.data);
+          break;
+        case 'KEEPALIVE':
+          break;
+      }
+    };
+    evtSource.onerror = e => {
+      console.error(
+        `EventSource connection failed for subscription ID: ${subId}`
+      );
+    };
+    return Promise.resolve(subId);
   }
 
-  unsubscribe(subscription) {
-    Promise.resolve(subscription).then(subId => {
-      if (this.subscriptions[subId] && this.subscriptions[subId].evtSource) {
-        this.subscriptions[subId].evtSource.close();
-      }
-      delete this.subscriptions[subId];
-    });
+  unsubscribe(subId) {
+    if (this.subscriptions[subId] && this.subscriptions[subId].evtSource) {
+      this.subscriptions[subId].evtSource.close();
+    }
+    delete this.subscriptions[subId];
   }
 
   unsubscribeAll() {
     Object.keys(this.subscriptions).forEach(subId => {
       this.unsubscribe(parseInt(subId));
     });
-  }
-
-  publish(subscription, data) {
-    const {timeout, headers} =
-      typeof this.httpOptions === 'function'
-        ? this.httpOptions()
-        : this.httpOptions;
-
-    return subscription.then(subId =>
-      fetch(`${this.url}/publish/${subId}`, {
-        method: 'POST',
-        headers: Object.assign({}, headers, {
-          'Content-Type': 'application/json'
-        }),
-        body: JSON.stringify(data),
-        timeout: timeout || 1000
-      })
-    );
   }
 }
 
