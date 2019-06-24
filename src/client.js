@@ -34,8 +34,11 @@ export class SubscriptionClient {
     numSubs++;
 
     let queryString = Object.keys(options)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(options[key])}`)
-    .join('&');
+      .map(
+        key => `${encodeURIComponent(key)}=${encodeURIComponent(options[key])}`
+      )
+      .join('&');
+
     const evtSource = new EventSource(`${this.url}?${queryString}`, {
       headers
     });

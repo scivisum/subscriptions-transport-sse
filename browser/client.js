@@ -8225,6 +8225,7 @@ var SubscriptionClient = exports.SubscriptionClient = function () {
       var queryString = (0, _keys2.default)(options).map(function (key) {
         return encodeURIComponent(key) + '=' + encodeURIComponent(options[key]);
       }).join('&');
+
       var evtSource = new _eventsource2.default(this.url + '?' + queryString, {
         headers: headers
       });
