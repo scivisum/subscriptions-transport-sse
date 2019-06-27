@@ -19,8 +19,7 @@
     "transport",
     "connection"
   ],
-  "main": "dist/express.js",
-  "browser": "dist/client.js",
+  "main": "dist/client.js",
   "files": [
     "dist",
     "browser"
