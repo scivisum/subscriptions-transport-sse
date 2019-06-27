@@ -71,7 +71,7 @@ export class SSELink extends ApolloLink {
 
 const toQueryParam = obj => {
   if (typeof obj === 'object') {
-    return JSON.stringify(obj);
+    obj = JSON.stringify(obj);
   }
   return encodeURIComponent(obj);
 };

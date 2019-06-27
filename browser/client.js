@@ -1826,7 +1826,7 @@ var SSELink = exports.SSELink = function (_ApolloLink) {
 
 var toQueryParam = function toQueryParam(obj) {
   if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) === 'object') {
-    return (0, _stringify2.default)(obj);
+    obj = (0, _stringify2.default)(obj);
   }
   return encodeURIComponent(obj);
 };
