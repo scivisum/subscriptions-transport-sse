@@ -25,10 +25,11 @@
     "browser"
   ],
   "scripts": {
-    "build": "babel src -d dist --source-maps --presets=env --plugins=transform-runtime",
+    "build": "babel src -d dist --source-maps --presets=@babel/env --plugins=@babel/transform-runtime",
     "browser-compile": "webpack --config webpack.config.js",
     "dev": "nodemon --watch src --exec \"npm run build\"",
-    "prepublish": "npm run build && npm run browser-compile"
+    "prepublish": "npm run build && npm run browser-compile",
+    "test": "karma start"
   },
   "dependencies": {
     "apollo-link": "^1.2.1",
@@ -38,12 +39,21 @@
     "graphql-subscriptions": "^0.5.4"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.6.0",
-    "mocha": "^4.0.1",
-    "nodemon": "^1.11.0",
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/runtime": "^7.4.5",
+    "eventsourcemock": "^2.0.0",
+    "graphql-tag": "^2.10.1",
+    "karma": "^4.1.0",
+    "karma-babel-preprocessor": "^8.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^4.0.2",
     "prettier": "^1.18.2",
-    "webpack": "^3.6.0"
+    "webpack": "^4.35.0",
+    "webpack-cli": "^3.3.5"
   }
 }
