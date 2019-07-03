@@ -45,7 +45,9 @@ function () {
         return "".concat(encodeURIComponent(key), "=").concat(toQueryParam(options[key]));
       }).join("&");
       var EventSource = _eventSourcePolyfill.NativeEventSource || _eventSourcePolyfill.EventSourcePolyfill;
-      var evtSource = new EventSource("".concat(this._url, "?").concat(queryString)); // const evtSource = this._eventSourceFactory(`${this._url}?${queryString}`);
+      var evtSource = new EventSource("".concat(this._url, "?").concat(queryString), {
+        heartbeatTimeout: 660000
+      }); // const evtSource = this._eventSourceFactory(`${this._url}?${queryString}`);
 
       this._subscriptions[subID] = {
         options: options,

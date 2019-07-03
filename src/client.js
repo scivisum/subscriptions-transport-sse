@@ -18,7 +18,7 @@ export class SubscriptionClient {
       .join("&");
 
     const EventSource = NativeEventSource || EventSourcePolyfill;
-    const evtSource = new EventSource(`${this._url}?${queryString}`);
+    const evtSource = new EventSource(`${this._url}?${queryString}`, { heartbeatTimeout: 660000 });
     // const evtSource = this._eventSourceFactory(`${this._url}?${queryString}`);
     this._subscriptions[subID] = {options, handler, evtSource};
 
