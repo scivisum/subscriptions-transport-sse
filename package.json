@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "apollo-link": "^1.2.1",
-    "babel-runtime": "^6.23.0",
+    "@babel/runtime": "^7.8.4",
     "event-source-polyfill": "^1.0.5",
     "graphql": "^14.0.2",
     "graphql-subscriptions": "^1.1.0"
