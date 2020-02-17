@@ -7,5 +7,6 @@ module.exports = {
     path: path.join(__dirname, '/browser'),
     filename: 'client.js',
     library: 'SubscriptionsTransportSSE'
-  }
+  },
+  mode: 'production'
 };
