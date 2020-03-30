@@ -2,7 +2,6 @@ import {ApolloLink, Observable} from "apollo-link";
 import {print} from "graphql/language/printer";
 import {NativeEventSource, EventSourcePolyfill} from "event-source-polyfill";
 
-
 export class SubscriptionClient {
   constructor(url) {
     this._url = url;
@@ -18,7 +17,10 @@ export class SubscriptionClient {
       .join("&");
 
     const EventSource = NativeEventSource || EventSourcePolyfill;
-    const evtSource = new EventSource(`${this._url}?${queryString}`, { heartbeatTimeout: 660000 });
+    const evtSource = new EventSource(`${this._url}?${queryString}`, {
+      heartbeatTimeout: 660000,
+      withCredentials: true
+    });
     this._subscriptions[subID] = {options, handler, evtSource};
 
     evtSource.onmessage = event => {
